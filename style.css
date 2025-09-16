@@ -1,68 +1,56 @@
-:root{
-  --max-clock-size: 420px;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  padding:12px;
-  font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", Arial, sans-serif;
-  background:#f4fbff;
-  color:#103149;
-  text-align:center;
-}
-.app-container{
-  max-width:760px;
-  margin:0 auto;
-}
-.clock-area{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:12px;
-  margin-bottom:14px;
+body {
+  font-family: "Arial", "Helvetica", sans-serif;
+  text-align: center;
+  background-color: #f0f8ff;
+  margin: 0;
+  padding: 0;
 }
 
-/* Canvas をレスポンシブに */
-#analogClock{
+h1 {
+  font-size: 1.8rem;
+  margin: 1rem 0;
+  color: #2b3a4a;
+}
+
+.clock-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#analogClock {
   width: 90vw;
-  max-width: var(--max-clock-size);
-  height: 90vw;
-  max-height: var(--max-clock-size);
-  border-radius:50%;
-  border:6px solid #2b3a4a;
-  background:#fff;
-  box-shadow:0 6px 14px rgba(0,0,0,0.07);
+  max-width: 360px;
+  aspect-ratio: 1 / 1;
+  background-color: transparent;
 }
 
-/* デジタル */
-#digitalClock{
-  font-size:clamp(20px, 4vw, 32px);
-  font-weight:700;
-  color:#0b3760;
+#digitalClock {
+  margin-top: 1rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #2b3a4a;
+  background-color: #ffffffcc;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
 }
 
-/* スケジュール表示 */
-.schedule-info{
-  font-size:clamp(14px, 3vw, 18px);
-  margin-bottom:12px;
+.buttons {
+  margin-top: 1.5rem;
 }
 
-/* ボタン */
-.controls, .timetable-buttons{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:8px;
-  margin-bottom:10px;
+button {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  margin: 0.4rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #4da6ff;
+  color: white;
+  cursor: pointer;
 }
-button{
-  padding:10px 14px;
-  border-radius:10px;
-  border:none;
-  background:linear-gradient(180deg,#3b8fb8,#2b6d91);
-  color:white;
-  font-size:clamp(14px,3vw,16px);
-  cursor:pointer;
-  box-shadow:0 3px 6px rgba(0,0,0,0.12);
+
+button:hover {
+  background-color: #007acc;
 }
-button:active{transform:translateY(1px)}
