@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>時計アプリ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <h1>とけいアプリ</h1>
+
+    <!-- アナログ時計 -->
+    <div class="clock">
+      <div class="hand hour" id="hour-hand"></div>
+      <div class="hand minute" id="minute-hand"></div>
+      <div class="center"></div>
+    </div>
+
+    <!-- デジタル時計 -->
+    <div class="digital-clock" id="digital-clock">--:--</div>
+
+    <!-- 現在の授業・休み時間 -->
+    <div class="schedule-info">
+      <p>今の時間：<span id="current-subject">---</span></p>
+      <p>開始時刻：<span id="current-start">---</span></p>
+      <p>終了時刻：<span id="current-end">---</span></p>
+    </div>
+
+    <!-- 操作用ボタン -->
+    <div class="buttons">
+      <button onclick="speakNow()">今のじこく</button>
+      <button onclick="speakName()">名称</button>
+      <button onclick="speakStart()">開始時刻</button>
+      <button onclick="speakEnd()">終了時刻</button>
+      <button onclick="speakRemain()">後何分</button>
+    </div>
+
+    <!-- 時刻表切り替え -->
+    <div class="timetable-buttons">
+      <button onclick="loadTimetable('timetable1.json')">時刻表1</button>
+      <button onclick="loadTimetable('timetable2.json')">時刻表2</button>
+      <button onclick="loadTimetable('timetable3.json')">時刻表3</button>
+      <button onclick="loadTimetable('timetable4.json')">時刻表4</button>
+      <button onclick="loadTimetable('timetable5.json')">時刻表5</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
