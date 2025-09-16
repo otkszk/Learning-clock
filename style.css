@@ -1,87 +1,147 @@
+/* 全体 */
+:root{
+  --clock-size: 360px; /* 必要ならここを変えて時計の大きさを変更できます */
+}
+*{box-sizing:border-box}
 body {
-  font-family: "Arial", "Hiragino Sans", sans-serif;
+  font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
   text-align: center;
-  background: #f0f9ff;
+  background: #f4fbff;
   margin: 0;
-  padding: 0;
+  padding: 16px;
+  color: #1b2b3a;
 }
 
+/* アプリ全体の幅 */
 .app-container {
-  max-width: 500px;
-  margin: auto;
-  padding: 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 10px;
 }
 
-h1 {
-  font-size: 2rem;
-  margin-bottom: 20px;
+/* アナログ時計のラッパー（中央寄せ） */
+.clock-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
 }
 
+/* アナログ時計本体（円） */
 .clock {
-  width: 250px;
-  height: 250px;
-  border: 8px solid #333;
-  border-radius: 50%;
-  margin: 20px auto;
   position: relative;
-  background: white;
+  width: var(--clock-size);
+  height: var(--clock-size);
+  border-radius: 50%;
+  background: #ffffff;
+  border: 10px solid #2b3a4a;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  overflow: visible;
 }
 
+/* 中心の点 */
+.center-dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #2b3a4a;
+  border-radius: 50%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+/* 針（共通）*/
 .hand {
   position: absolute;
-  bottom: 50%;
   left: 50%;
-  transform-origin: bottom center;
-  transform: translateX(-50%);
-}
-
-.hand.hour {
-  width: 8px;
-  height: 70px;
-  background: #333;
-  border-radius: 4px;
-}
-
-.hand.minute {
-  width: 4px;
-  height: 100px;
-  background: #0077cc;
-  border-radius: 2px;
-}
-
-.center {
-  width: 12px;
-  height: 12px;
-  background: #333;
-  border-radius: 50%;
-  position: absolute;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  transform-origin: 50% 100%;
+  transform: translate(-50%, -100%) rotate(0deg);
+  border-radius: 6px;
+  z-index: 5;
 }
 
+/* 時針 */
+.hand.hour {
+  width: 12px;
+  height: calc(var(--clock-size) * 0.28); /* 中心から長さ */
+  background: #2b3a4a;
+}
+
+/* 分針 */
+.hand.minute {
+  width: 8px;
+  height: calc(var(--clock-size) * 0.38);
+  background: #0b76c1;
+}
+
+/* デジタル時計 */
 .digital-clock {
-  font-size: 2rem;
-  margin: 10px;
-  color: #333;
+  font-size: 1.8rem;
+  margin: 12px 0;
+  font-weight: 700;
+  color: #083b66;
 }
 
+/* スケジュール表示 */
 .schedule-info {
-  font-size: 1.2rem;
-  margin: 20px 0;
+  font-size: 1.1rem;
+  margin: 6px 0 18px;
 }
 
+/* ボタン類 */
 .buttons button, .timetable-buttons button {
-  margin: 5px;
-  padding: 10px 15px;
+  margin: 6px 6px;
+  padding: 10px 14px;
   font-size: 1rem;
   border: none;
-  border-radius: 10px;
-  background: #4CAF50;
-  color: white;
+  border-radius: 12px;
+  background: linear-gradient(180deg,#3cb371,#2e8b57);
+  color: #fff;
   cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+}
+.buttons button:hover, .timetable-buttons button:hover {
+  opacity: 0.95;
 }
 
-.buttons button:hover, .timetable-buttons button:hover {
-  background: #45a049;
+/* 時刻の数字（1〜12） */
+.hour-number {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 36px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  font-weight: 700;
+  color: #0e2a44;
+  user-select: none;
+  z-index: 4;
+  font-size: 1.05rem;
+}
+
+/* 分メモリ（tick） */
+.minute-tick {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: 50% 100%;
+  background: #2b3a4a;
+  z-index: 3;
+  border-radius: 2px;
+  /* width/height を inline style で変えます */
+}
+
+/* 5分ごとの長めのメモリ */
+.minute-tick.long {
+  background: #0b76c1;
+}
+
+/* スマホ等で時計を少し小さくしたい場合 */
+@media (max-width:600px){
+  :root{ --clock-size: 300px; }
+  .hour-number{ width:30px; height:20px; font-size:0.95rem; }
 }
