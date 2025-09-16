@@ -3,14 +3,14 @@ body {
     text-align: center;
     background-color: #f0f8ff;
     margin: 0;
-    padding: 20px;
+    padding: 10px;
 }
 
 .clock-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 20px auto;
+    margin: 10px auto;
 }
 
 #analogClock {
@@ -18,26 +18,28 @@ body {
     border: 5px solid #333;
     border-radius: 50%;
     box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
-    width: 350px;
-    height: 350px;
+    width: 90vw;
+    max-width: 400px;
+    height: 90vw;
+    max-height: 400px;
 }
 
 #digitalClock {
-    font-size: 2em;
-    margin-top: 10px;
+    font-size: 2.5em;
+    margin-top: 15px;
     font-weight: bold;
+    color: #000;
 }
 
 .info {
-    margin-top: 20px;
-    font-size: 1.2em;
+    margin-top: 15px;
+    font-size: 1.4em;
 }
 
-.buttons button,
-.schedule-buttons button {
+button {
     margin: 5px;
     padding: 10px 15px;
-    font-size: 1em;
+    font-size: 1.1em;
     border-radius: 8px;
     border: none;
     background-color: #4682b4;
@@ -45,7 +47,6 @@ body {
     cursor: pointer;
 }
 
-.buttons button:hover,
-.schedule-buttons button:hover {
+button:hover {
     background-color: #315f7f;
 }
