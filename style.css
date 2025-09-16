@@ -1,0 +1,87 @@
+body {
+  font-family: "Arial", "Hiragino Sans", sans-serif;
+  text-align: center;
+  background: #f0f9ff;
+  margin: 0;
+  padding: 0;
+}
+
+.app-container {
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.clock {
+  width: 250px;
+  height: 250px;
+  border: 8px solid #333;
+  border-radius: 50%;
+  margin: 20px auto;
+  position: relative;
+  background: white;
+}
+
+.hand {
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  transform-origin: bottom center;
+  transform: translateX(-50%);
+}
+
+.hand.hour {
+  width: 8px;
+  height: 70px;
+  background: #333;
+  border-radius: 4px;
+}
+
+.hand.minute {
+  width: 4px;
+  height: 100px;
+  background: #0077cc;
+  border-radius: 2px;
+}
+
+.center {
+  width: 12px;
+  height: 12px;
+  background: #333;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.digital-clock {
+  font-size: 2rem;
+  margin: 10px;
+  color: #333;
+}
+
+.schedule-info {
+  font-size: 1.2rem;
+  margin: 20px 0;
+}
+
+.buttons button, .timetable-buttons button {
+  margin: 5px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  background: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+.buttons button:hover, .timetable-buttons button:hover {
+  background: #45a049;
+}
