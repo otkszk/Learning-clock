@@ -30,8 +30,14 @@ body {
   border-radius: 0.5rem;
 }
 
+#currentName {
+  margin-top: 0.5rem;
+  font-size: 1.4rem;
+  color: #4d4d4d;
+}
+
 .buttons {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
 }
 
 button {
