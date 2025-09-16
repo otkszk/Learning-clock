@@ -1,55 +1,39 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>時計アプリ</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>時計アプリ</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app-container">
-    <!-- アナログ時計（大きく表示） -->
-    <div class="clock-wrapper">
-      <div class="clock" id="analog-clock" aria-label="アナログ時計">
-        <div id="hour-marks" class="marks hour-marks"></div>
-        <div id="minute-marks" class="marks minute-marks" style="display:none;"></div>
-
-        <div class="hand hour" id="hour-hand"></div>
-        <div class="hand minute" id="minute-hand"></div>
-        <div class="center-dot"></div>
-      </div>
+    <div class="clock-container">
+        <canvas id="analogClock" width="300" height="300"></canvas>
+        <div id="digitalClock"></div>
     </div>
 
-    <!-- デジタル時計 -->
-    <div class="digital-clock" id="digital-clock">--:--</div>
-
-    <!-- 現在の授業／時間 -->
-    <div class="schedule-info">
-      <p>今の時間：<span id="current-subject">---</span></p>
-      <p>開始時刻：<span id="current-start">---</span></p>
-      <p>終了時刻：<span id="current-end">---</span></p>
+    <div class="info">
+        <p>今の時間割: <span id="currentPeriod">-</span></p>
+        <p>開始時刻: <span id="startTime">-</span></p>
+        <p>終了時刻: <span id="endTime">-</span></p>
     </div>
 
-    <!-- 操作用ボタン -->
     <div class="buttons">
-      <button id="btn-now" onclick="speakNow()">今のじこく</button>
-      <button id="btn-name" onclick="speakName()">名称</button>
-      <button id="btn-start" onclick="speakStart()">開始時刻</button>
-      <button id="btn-end" onclick="speakEnd()">終了時刻</button>
-      <button id="btn-remain" onclick="speakRemain()">後何分</button>
-      <button id="btn-toggle-minutes" onclick="toggleMinuteMarks()">分表示</button>
+        <button onclick="speakTime()">今のじこく</button>
+        <button onclick="speakName()">名称</button>
+        <button onclick="speakStart()">開始時刻</button>
+        <button onclick="speakEnd()">終了時刻</button>
+        <button onclick="speakRemaining()">後何分</button>
+        <button onclick="toggleMinuteMarks()">分表示</button>
     </div>
 
-    <!-- 時刻表切り替え -->
-    <div class="timetable-buttons">
-      <button onclick="loadTimetable('timetable1.json')">時刻表1</button>
-      <button onclick="loadTimetable('timetable2.json')">時刻表2</button>
-      <button onclick="loadTimetable('timetable3.json')">時刻表3</button>
-      <button onclick="loadTimetable('timetable4.json')">時刻表4</button>
-      <button onclick="loadTimetable('timetable5.json')">時刻表5</button>
+    <div class="schedule-buttons">
+        <button onclick="loadSchedule('data/schedule1.json')">時刻表1</button>
+        <button onclick="loadSchedule('data/schedule2.json')">時刻表2</button>
+        <button onclick="loadSchedule('data/schedule3.json')">時刻表3</button>
+        <button onclick="loadSchedule('data/schedule4.json')">時刻表4</button>
+        <button onclick="loadSchedule('data/schedule5.json')">時刻表5</button>
     </div>
-  </div>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
