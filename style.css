@@ -6,12 +6,6 @@ body {
   padding: 0;
 }
 
-h1 {
-  font-size: 1.8rem;
-  margin: 1rem 0;
-  color: #2b3a4a;
-}
-
 .clock-container {
   display: flex;
   flex-direction: column;
