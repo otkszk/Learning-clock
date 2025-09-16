@@ -1,11 +1,11 @@
 let scheduleData = [];
 let currentPeriod = {};
-let showMinutes = true; // ← 最初から分目盛り表示
+let showMinuteNumbers = false; // 初期は非表示
 
 const canvas = document.getElementById("analogClock");
 const ctx = canvas.getContext("2d");
 
-// 高DPI対応（スマホ/タブレット）
+// 高DPI対応
 function resizeCanvas() {
     const size = Math.min(window.innerWidth * 0.9, 400);
     canvas.width = size * 2;
@@ -16,7 +16,7 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
-// 時計を描画
+// 時計描画
 function drawClock() {
     const radius = canvas.width / 2;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -25,8 +25,8 @@ function drawClock() {
     ctx.translate(radius, radius);
 
     drawFace(ctx, radius);
-    drawNumbers(ctx, radius);
-    if (showMinutes) drawMinuteMarks(ctx, radius);
+    drawHourNumbers(ctx, radius);
+    if (showMinuteNumbers) drawMinuteNumbers(ctx, radius);
     drawTime(ctx, radius);
 
     ctx.restore();
@@ -44,35 +44,29 @@ function drawFace(ctx, radius) {
     ctx.stroke();
 }
 
-// 時間数字（1〜12）
-function drawNumbers(ctx, radius) {
+// 時間（1～12）
+function drawHourNumbers(ctx, radius) {
     ctx.font = radius * 0.18 + "px Arial";
     ctx.textBaseline = "middle";
     ctx.textAlign = "center";
     for (let num = 1; num <= 12; num++) {
         let ang = (num * Math.PI) / 6;
-        ctx.rotate(ang);
-        ctx.translate(0, -radius * 0.78);
-        ctx.rotate(-ang);
-        ctx.fillText(num.toString(), 0, 0);
-        ctx.rotate(ang);
-        ctx.translate(0, radius * 0.78);
-        ctx.rotate(-ang);
+        let x = Math.sin(ang) * (radius * 0.75);
+        let y = -Math.cos(ang) * (radius * 0.75);
+        ctx.fillText(num.toString(), x, y);
     }
 }
 
-// 分目盛り（線のみ）
-function drawMinuteMarks(ctx, radius) {
-    for (let i = 0; i < 60; i++) {
-        let ang = (i * Math.PI) / 30;
-        ctx.rotate(ang);
-        ctx.beginPath();
-        ctx.moveTo(0, -radius * 0.92);
-        ctx.lineTo(0, -radius * 0.85);
-        ctx.lineWidth = (i % 5 === 0) ? 4 : 2;
-        ctx.strokeStyle = (i % 5 === 0) ? "#000" : "#666";
-        ctx.stroke();
-        ctx.rotate(-ang);
+// 分（1～60）
+function drawMinuteNumbers(ctx, radius) {
+    ctx.font = radius * 0.08 + "px Arial";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    for (let num = 1; num <= 60; num++) {
+        let ang = (num * Math.PI) / 30;
+        let x = Math.sin(ang) * (radius * 0.9);
+        let y = -Math.cos(ang) * (radius * 0.9);
+        ctx.fillText(num.toString(), x, y);
     }
 }
 
@@ -99,7 +93,7 @@ function drawTime(ctx, radius) {
     drawHand(ctx, secondPos, radius * 0.85, radius * 0.02, "red");
 }
 
-// 針
+// 針描画
 function drawHand(ctx, pos, length, width, color = "#000") {
     ctx.beginPath();
     ctx.lineWidth = width;
@@ -124,8 +118,8 @@ function updateDigitalClock() {
 }
 
 // --------- ボタン機能 ---------
-function toggleMinuteMarks() {
-    showMinutes = !showMinutes;
+function toggleMinuteNumbers() {
+    showMinuteNumbers = !showMinuteNumbers;
     drawClock();
 }
 
