@@ -1,6 +1,6 @@
 let timetable = []; 
 let currentPeriod = {};
-let showMinuteFiveNumbers = true; // 初期は5分ごと表示
+let showMinuteFiveNumbers = true;
 
 const canvas = document.getElementById('analogClock');
 const ctx = canvas.getContext('2d');
@@ -39,7 +39,6 @@ function drawClock() {
 
   const { center, radius } = getCanvasMetrics();
 
-  // 外枠
   ctx.beginPath();
   ctx.arc(center, center, radius * 0.95, 0, Math.PI * 2);
   ctx.fillStyle = '#ffffff';
@@ -131,13 +130,13 @@ async function loadTimetable(path) {
     const res = await fetch(path);
     if (!res.ok) throw new Error('読み込み失敗');
     const raw = await res.json();
-    timetable = raw.map(item => {
-      const name = item['名称'] || item['name'];
-      const start = item['開始時刻'] || item['start'];
-      const end = item['終了時刻'] || item['end'];
-      return { name, start, end };
-    }).filter(e => e.start && e.end);
-    speak(`${path} を読み込みました`);
+
+    // timetable1.json のフォーマットが「名称」「開始時刻」「終了時刻」である前提
+    timetable = raw.map(item => ({
+      name: item['名称'],
+      start: item['開始時刻'],
+      end: item['終了時刻']
+    }));
   } catch (e) {
     timetable = [];
     speak('時刻表の読み込みに失敗しました');
@@ -174,11 +173,28 @@ function speak(text) {
   speechSynthesis.cancel();
   speechSynthesis.speak(u);
 }
-function speakNow(){ const n=new Date(); const h=n.getHours(); const m=n.getMinutes(); const am=h<12?'午前':'午後'; const h12=h%12||12; speak(`今の時刻は、${am}${h12}時${m}分です`); }
+
+function speakNow(){ 
+  const n=new Date(); 
+  const h=n.getHours(); 
+  const m=n.getMinutes(); 
+  const am=h<12?'午前':'午後'; 
+  const h12=h%12||12; 
+  speak(`今の時刻は、${am}${h12}時${m}分です`); 
+}
 function speakName(){ if (currentPeriod.name) speak(currentPeriod.name); else speak('現在、授業はありません'); }
 function speakStart(){ if (currentPeriod.name) speak(`${currentPeriod.name}は、${currentPeriod.start}から始まりました`); }
 function speakEnd(){ if (currentPeriod.name) speak(`${currentPeriod.name}は、${currentPeriod.end}に終わります`); }
-function speakRemain(){ if (currentPeriod.end) { const now = new Date(); const [eh,em] = currentPeriod.end.split(':').map(Number); const end = new Date(); end.setHours(eh, em, 0, 0); const diff = Math.max(0, Math.floor((end - now)/60000)); speak(`${currentPeriod.name}は、あと${diff}分で終わります`); } }
+function speakRemain(){ 
+  if (currentPeriod.end) { 
+    const now = new Date(); 
+    const [eh,em] = currentPeriod.end.split(':').map(Number); 
+    const end = new Date(); 
+    end.setHours(eh, em, 0, 0); 
+    const diff = Math.max(0, Math.floor((end - now)/60000)); 
+    speak(`${currentPeriod.name}は、あと${diff}分で終わります`); 
+  } 
+}
 
 /* ------------------------
    ボタン・初期化
