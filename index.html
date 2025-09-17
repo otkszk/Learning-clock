@@ -8,17 +8,20 @@
 </head>
 <body>
   <div class="app-container">
+    <!-- アナログ＆デジタル時計 -->
     <div class="clock-area">
       <canvas id="analogClock" aria-label="アナログ時計"></canvas>
       <div id="digitalClock" aria-live="polite"></div>
     </div>
 
+    <!-- 現在の授業／時間 -->
     <div class="schedule-info">
       <p>今の時間：<span id="currentPeriod">-</span></p>
       <p>開始時刻：<span id="startTime">-</span></p>
       <p>終了時刻：<span id="endTime">-</span></p>
     </div>
 
+    <!-- 操作用ボタン -->
     <div class="controls">
       <button id="btn-now">今のじこく</button>
       <button id="btn-name">名称</button>
@@ -28,6 +31,7 @@
       <button id="btn-toggle-minutes">分表示（5分ごと）ON</button>
     </div>
 
+    <!-- 時刻表切り替え -->
     <div class="timetable-buttons">
       <button class="tt-btn" data-file="data/timetable1.json">時刻表1</button>
       <button class="tt-btn" data-file="data/timetable2.json">時刻表2</button>
