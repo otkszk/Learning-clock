@@ -11,9 +11,36 @@ body{
   text-align:center;
 }
 .app-container{
-  max-width:760px;
+  max-width:960px;
   margin:0 auto;
 }
+
+/* メインレイアウト：左に時刻表、右に時計 */
+.main-layout {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.timetable-list {
+  text-align: left;
+  max-width: 220px;
+  font-size: clamp(12px, 2.8vw, 16px);
+}
+
+.timetable-item {
+  padding: 4px 6px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+}
+
+.timetable-item.active {
+  background: #ffe066;
+  font-weight: bold;
+}
+
+/* 時計エリア */
 .clock-area{
   display:flex;
   flex-direction:column;
