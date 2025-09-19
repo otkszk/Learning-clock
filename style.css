@@ -27,12 +27,18 @@ body{
   text-align: left;
   max-width: 220px;
   font-size: clamp(12px, 2.8vw, 16px);
+  max-height: 6em;   /* ★3行程度に制限 */
+  overflow-y: auto;  /* ★スクロール可能 */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
 }
 
 .timetable-item {
   padding: 4px 6px;
   border-radius: 6px;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
+  cursor: pointer;
 }
 
 .timetable-item.active {
