@@ -8,10 +8,15 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- アナログ＆デジタル時計 -->
-    <div class="clock-area">
-      <canvas id="analogClock" aria-label="アナログ時計"></canvas>
-      <div id="digitalClock" aria-live="polite"></div>
+    <div class="main-layout">
+      <!-- 左：時刻表リスト -->
+      <div class="timetable-list" id="timetableList"></div>
+
+      <!-- 右：アナログ＆デジタル時計 -->
+      <div class="clock-area">
+        <canvas id="analogClock" aria-label="アナログ時計"></canvas>
+        <div id="digitalClock" aria-live="polite"></div>
+      </div>
     </div>
 
     <!-- 現在の授業／時間 -->
