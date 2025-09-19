@@ -144,15 +144,42 @@ async function loadTimetable(path) {
 function renderTimetable() {
   const listEl = document.getElementById('timetableList');
   listEl.innerHTML = '';
-  timetable.forEach(p => {
+
+  if (timetable.length === 0) return;
+
+  // 現在のインデックスを取得
+  const now = new Date();
+  const curMinutes = now.getHours() * 60 + now.getMinutes();
+  let currentIndex = -1;
+
+  timetable.forEach((p, i) => {
+    const [sh, sm] = p.start.split(':').map(Number);
+    const [eh, em] = p.end.split(':').map(Number);
+    const startM = sh * 60 + sm;
+    const endM = eh * 60 + em;
+    if (curMinutes >= startM && curMinutes < endM) {
+      currentIndex = i;
+    }
+  });
+
+  // 全件追加（CSSで高さ制限してスクロール）
+  timetable.forEach((p, i) => {
     const div = document.createElement('div');
     div.className = 'timetable-item';
     div.textContent = `${p.start}〜${p.end} ${p.name}`;
-    if (currentPeriod.name === p.name) {
+    if (i === currentIndex) {
       div.classList.add('active');
     }
     listEl.appendChild(div);
   });
+
+  // 現在行を中央にスクロール
+  if (currentIndex >= 0) {
+    const activeEl = listEl.querySelector('.active');
+    if (activeEl) {
+      listEl.scrollTop = activeEl.offsetTop - listEl.clientHeight / 2 + activeEl.clientHeight / 2;
+    }
+  }
 }
 
 function updateCurrentPeriod() {
