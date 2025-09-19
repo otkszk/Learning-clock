@@ -130,8 +130,6 @@ async function loadTimetable(path) {
     const res = await fetch(path);
     if (!res.ok) throw new Error('読み込み失敗');
     const raw = await res.json();
-
-    // timetable1.json のフォーマットが「名称」「開始時刻」「終了時刻」である前提
     timetable = raw.map(item => ({
       name: item['名称'],
       start: item['開始時刻'],
@@ -141,6 +139,20 @@ async function loadTimetable(path) {
     timetable = [];
     speak('時刻表の読み込みに失敗しました');
   }
+}
+
+function renderTimetable() {
+  const listEl = document.getElementById('timetableList');
+  listEl.innerHTML = '';
+  timetable.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'timetable-item';
+    div.textContent = `${p.start}〜${p.end} ${p.name}`;
+    if (currentPeriod.name === p.name) {
+      div.classList.add('active');
+    }
+    listEl.appendChild(div);
+  });
 }
 
 function updateCurrentPeriod() {
@@ -160,6 +172,7 @@ function updateCurrentPeriod() {
   document.getElementById('currentPeriod').textContent = currentPeriod.name || '-';
   document.getElementById('startTime').textContent = currentPeriod.start || '-';
   document.getElementById('endTime').textContent = currentPeriod.end || '-';
+  renderTimetable();
 }
 
 /* ------------------------
@@ -173,7 +186,6 @@ function speak(text) {
   speechSynthesis.cancel();
   speechSynthesis.speak(u);
 }
-
 function speakNow(){ 
   const n=new Date(); 
   const h=n.getHours(); 
@@ -221,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 初期ロードは timetable1.json
+  // 初期ロード
   loadTimetable('data/timetable1.json').then(() => updateCurrentPeriod());
 
   drawClock();
