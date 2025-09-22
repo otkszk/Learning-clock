@@ -162,7 +162,7 @@ function renderTimetable() {
     }
   });
 
-  // 全件追加（CSSで高さ制限してスクロール）
+  // 全件追加
   timetable.forEach((p, i) => {
     const div = document.createElement('div');
     div.className = 'timetable-item';
@@ -177,7 +177,9 @@ function renderTimetable() {
   if (currentIndex >= 0) {
     const activeEl = listEl.querySelector('.active');
     if (activeEl) {
-      listEl.scrollTop = activeEl.offsetTop - listEl.clientHeight / 2 + activeEl.clientHeight / 2;
+      listEl.scrollTop = activeEl.offsetTop 
+                       - (listEl.clientHeight / 2) 
+                       + (activeEl.clientHeight / 2);
     }
   }
 }
