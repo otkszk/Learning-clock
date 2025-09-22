@@ -19,19 +19,24 @@ body{
 .main-layout {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center; /* 時計とリストの中央を揃える */
   gap: 16px;
 }
 
+/* 時刻表リスト */
 .timetable-list {
   text-align: left;
   max-width: 220px;
   font-size: clamp(12px, 2.8vw, 16px);
-  max-height: 6em;   /* ★3行程度に制限 */
-  overflow-y: auto;  /* ★スクロール可能 */
+  max-height: 50vh;   /* ★画面の半分程度の高さ */
+  overflow-y: auto;   /* ★スクロール可能 */
   border: 1px solid #ccc;
   border-radius: 6px;
   background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* ★リスト内容を中央寄せ */
+  padding: 6px;
 }
 
 .timetable-item {
