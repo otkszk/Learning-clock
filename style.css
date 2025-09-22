@@ -26,16 +26,16 @@ body{
 /* 時刻表リスト */
 .timetable-list {
   text-align: left;
-  max-width: 220px;
+  max-width: 300px;   /* ★横幅を広げる */
   font-size: clamp(12px, 2.8vw, 16px);
-  max-height: 6em;   /* ★3行分くらいに狭くする */
+  max-height: 6em;   /* ★3行程度の高さ */
   overflow-y: auto;  /* ★スクロール可能 */
   border: 1px solid #ccc;
   border-radius: 6px;
   background: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* 中央寄せ */
+  justify-content: center;
   padding: 6px;
 }
 
