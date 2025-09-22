@@ -28,14 +28,14 @@ body{
   text-align: left;
   max-width: 220px;
   font-size: clamp(12px, 2.8vw, 16px);
-  max-height: 50vh;   /* ★画面の半分程度の高さ */
-  overflow-y: auto;   /* ★スクロール可能 */
+  max-height: 6em;   /* ★3行分くらいに狭くする */
+  overflow-y: auto;  /* ★スクロール可能 */
   border: 1px solid #ccc;
   border-radius: 6px;
   background: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* ★リスト内容を中央寄せ */
+  justify-content: center; /* 中央寄せ */
   padding: 6px;
 }
 
