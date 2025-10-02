@@ -26,23 +26,23 @@ body{
 /* 時刻表リスト */
 .timetable-list {
   text-align: left;
-  max-width: 300px;   /* ★横幅を広げる */
-  font-size: clamp(12px, 2.8vw, 16px);
-  max-height: 6em;   /* ★3行程度の高さ */
-  overflow-y: auto;  /* ★スクロール可能 */
+  max-width: 340px;   /* 横幅を広めに */
+  font-size: clamp(16px, 3.5vw, 20px); /* 大きく */
+  max-height: 12em;   /* ★5行程度の高さ */
+  overflow-y: auto;   /* スクロール可能 */
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #fff;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 6px;
+  padding: 8px;
 }
 
 .timetable-item {
-  padding: 4px 6px;
+  padding: 6px 8px;
   border-radius: 6px;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
   cursor: pointer;
 }
 
@@ -74,7 +74,7 @@ body{
 
 /* デジタル */
 #digitalClock{
-  font-size:clamp(20px, 4vw, 32px);
+  font-size:clamp(22px, 4vw, 34px);
   font-weight:700;
   color:#0b3760;
 }
