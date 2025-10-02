@@ -28,7 +28,7 @@ body{
   text-align: left;
   max-width: 360px;             /* 横幅広め */
   font-size: clamp(20px, 3.5vw, 24px); /* ★フォントを大きく */
-  max-height: 20em;             /* ★7行程度表示できる高さ */
+  max-height: 14em;             /* ★5行分程度の高さ */
   overflow-y: auto;             /* スクロール可能 */
   border: 2px solid #888;
   border-radius: 10px;
@@ -49,6 +49,7 @@ body{
   background: #ffe066;
   font-weight: bold;
 }
+
 
 /* 時計エリア */
 .clock-area{
