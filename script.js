@@ -177,13 +177,14 @@ function renderTimetable() {
   if (currentIndex >= 0) {
     const activeEl = listEl.querySelector('.active');
     if (activeEl) {
-      const scrollPos = activeEl.offsetTop 
-                      - listEl.clientHeight / 2 
-                      + activeEl.clientHeight / 2;
-      listEl.scrollTop = Math.max(0, scrollPos);
+      activeEl.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
     }
   }
 }
+
 
 function updateCurrentPeriod() {
   const now = new Date();
