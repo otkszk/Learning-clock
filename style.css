@@ -26,23 +26,22 @@ body{
 /* 時刻表リスト */
 .timetable-list {
   text-align: left;
-  max-width: 340px;   /* 横幅を広めに */
-  font-size: clamp(16px, 3.5vw, 20px); /* 大きく */
-  max-height: 12em;   /* ★5行程度の高さ */
-  overflow-y: auto;   /* スクロール可能 */
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  max-width: 360px;             /* 横幅広め */
+  font-size: clamp(20px, 3.5vw, 24px); /* ★フォントを大きく */
+  max-height: 20em;             /* ★7行程度表示できる高さ */
+  overflow-y: auto;             /* スクロール可能 */
+  border: 2px solid #888;
+  border-radius: 10px;
   background: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   padding: 8px;
 }
 
 .timetable-item {
-  padding: 6px 8px;
+  padding: 8px 10px;
   border-radius: 6px;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   cursor: pointer;
 }
 
@@ -74,14 +73,14 @@ body{
 
 /* デジタル */
 #digitalClock{
-  font-size:clamp(22px, 4vw, 34px);
+  font-size:clamp(26px, 4vw, 36px);
   font-weight:700;
   color:#0b3760;
 }
 
 /* スケジュール表示 */
 .schedule-info{
-  font-size:clamp(14px, 3vw, 18px);
+  font-size:clamp(18px, 3vw, 22px);
   margin-bottom:12px;
 }
 
@@ -94,12 +93,12 @@ body{
   margin-bottom:10px;
 }
 button{
-  padding:10px 14px;
+  padding:12px 16px;
   border-radius:10px;
   border:none;
   background:linear-gradient(180deg,#3b8fb8,#2b6d91);
   color:white;
-  font-size:clamp(14px,3vw,16px);
+  font-size:clamp(16px,3vw,20px);
   cursor:pointer;
   box-shadow:0 3px 6px rgba(0,0,0,0.12);
 }
