@@ -15,21 +15,21 @@ body{
   margin:0 auto;
 }
 
-/* メインレイアウト：左に時刻表、右に時計 */
+/* メインレイアウト */
 .main-layout {
   display: flex;
   justify-content: center;
-  align-items: center; /* 時計とリストの中央を揃える */
+  align-items: center;
   gap: 16px;
 }
 
 /* 時刻表リスト */
 .timetable-list {
   text-align: left;
-  max-width: 360px;             /* 横幅広め */
-  font-size: clamp(20px, 3.5vw, 24px); /* ★フォントを大きく */
-  max-height: 14em;             /* ★5行分程度の高さ */
-  overflow-y: auto;             /* スクロール可能 */
+  max-width: 360px;
+  font-size: clamp(20px, 3.5vw, 24px); /* 大きめ */
+  max-height: 14em;   /* ★5行分程度の高さ */
+  overflow-y: auto;
   border: 2px solid #888;
   border-radius: 10px;
   background: #fff;
@@ -50,7 +50,6 @@ body{
   font-weight: bold;
 }
 
-
 /* 時計エリア */
 .clock-area{
   display:flex;
@@ -60,7 +59,6 @@ body{
   margin-bottom:14px;
 }
 
-/* Canvas をレスポンシブに */
 #analogClock{
   width: 90vw;
   max-width: var(--max-clock-size);
@@ -72,7 +70,6 @@ body{
   box-shadow:0 6px 14px rgba(0,0,0,0.07);
 }
 
-/* デジタル */
 #digitalClock{
   font-size:clamp(26px, 4vw, 36px);
   font-weight:700;
