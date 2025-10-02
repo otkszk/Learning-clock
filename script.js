@@ -177,9 +177,10 @@ function renderTimetable() {
   if (currentIndex >= 0) {
     const activeEl = listEl.querySelector('.active');
     if (activeEl) {
-      listEl.scrollTop = activeEl.offsetTop 
-                       - (listEl.clientHeight / 2) 
-                       + (activeEl.clientHeight / 2);
+      const scrollPos = activeEl.offsetTop 
+                      - listEl.clientHeight / 2 
+                      + activeEl.clientHeight / 2;
+      listEl.scrollTop = Math.max(0, scrollPos);
     }
   }
 }
