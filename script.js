@@ -39,6 +39,7 @@ function drawClock() {
 
   const { center, radius } = getCanvasMetrics();
 
+  // 背景の円
   ctx.beginPath();
   ctx.arc(center, center, radius * 0.95, 0, Math.PI * 2);
   ctx.fillStyle = '#ffffff';
@@ -47,9 +48,38 @@ function drawClock() {
   ctx.strokeStyle = '#2b3a4a';
   ctx.stroke();
 
+  // ★ 現在の時間帯の「残り部分」を塗る
+  if (currentPeriod.start && currentPeriod.end) {
+    const now = new Date();
+    const nowMinutes = (now.getHours() % 12) * 60 + now.getMinutes();
+
+    const [sh, sm] = currentPeriod.start.split(':').map(Number);
+    const [eh, em] = currentPeriod.end.split(':').map(Number);
+    const startMinutes = (sh % 12) * 60 + sm;
+    const endMinutes = (eh % 12) * 60 + em;
+
+    // 現在時刻が範囲内の場合のみ
+    if (nowMinutes >= startMinutes && nowMinutes < endMinutes) {
+      const startAngle = (Math.PI / 2) - (nowMinutes * Math.PI / 360);
+      const endAngle = (Math.PI / 2) - (endMinutes * Math.PI / 360);
+
+      ctx.beginPath();
+      ctx.moveTo(center, center);
+      ctx.arc(center, center, radius * 0.9, startAngle, endAngle, true);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(255, 182, 193, 0.6)'; // ピンク
+      ctx.fill();
+    }
+  }
+
+  // 目盛
   drawHourNumbers(center, radius);
   if (showMinuteFiveNumbers) drawMinuteFiveNumbers(center, radius);
+
+  // 針
   drawHands(center, radius);
+
+  // デジタル更新
   updateDigitalClock();
 }
 
@@ -184,7 +214,6 @@ function renderTimetable() {
     }
   }
 }
-
 
 function updateCurrentPeriod() {
   const now = new Date();
