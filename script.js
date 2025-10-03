@@ -6,9 +6,7 @@ const canvas = document.getElementById('analogClock');
 const ctx = canvas.getContext('2d');
 const digitalEl = document.getElementById('digitalClock');
 
-/* ------------------------
-   Canvas 高 DPI 対応
-   ------------------------ */
+/* Canvas 高DPI対応 */
 function resizeCanvasForDPR() {
   const cssSize = Math.min(window.innerWidth * 0.9, 420);
   const dpr = window.devicePixelRatio || 1;
@@ -16,7 +14,6 @@ function resizeCanvasForDPR() {
   canvas.style.height = cssSize + 'px';
   canvas.width = Math.round(cssSize * dpr);
   canvas.height = Math.round(cssSize * dpr);
-  // 描画はCSSピクセル単位で行う
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 resizeCanvasForDPR();
@@ -25,23 +22,16 @@ window.addEventListener('resize', () => {
   drawClock();
 });
 
-/* ------------------------
-   ヘルパー（中心・半径）
-   ------------------------ */
+/* 時計描画 */
 function getCanvasMetrics() {
   const cssSize = canvas.clientWidth;
   const center = cssSize / 2;
   const radius = cssSize / 2;
-  return { cssSize, center, radius };
+  return { center, radius };
 }
 
-/* ------------------------
-   時計描画（扇形：現在→終了 を塗る）
-   ------------------------ */
 function drawClock() {
-  // クリア（CSSピクセル換算）
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   const { center, radius } = getCanvasMetrics();
 
   // 盤面
@@ -53,303 +43,168 @@ function drawClock() {
   ctx.strokeStyle = '#2b3a4a';
   ctx.stroke();
 
-  // ★ 現在の時間帯の「残り部分」をピンクで塗る（正しい角度計算）
+  // ★ 分針基準で「現在〜終了」部分を塗る
   if (currentPeriod.start && currentPeriod.end) {
     const now = new Date();
-    // 12時間で見た分単位（0～719）
-    const nowTotal = ((now.getHours() % 12) * 60) + now.getMinutes();
+    const nowM = now.getMinutes();
 
-    const [sh, sm] = currentPeriod.start.split(':').map(Number);
     const [eh, em] = currentPeriod.end.split(':').map(Number);
-    const startTotal = ((sh % 12) * 60) + sm;
-    const endTotal = ((eh % 12) * 60) + em;
+    const endM = em; // 終了時刻の分
 
-    // 現在時刻が該当範囲内の時だけ描画
-    if (nowTotal >= startTotal && nowTotal < endTotal) {
-      // 角度に変換（total / 720 * 2π） - π/2で12時を上に
-      let nowAngle = (nowTotal / 720) * 2 * Math.PI - Math.PI / 2;
-      let endAngle = (endTotal / 720) * 2 * Math.PI - Math.PI / 2;
+    // 今の分針角度と終了分針角度
+    let nowAngle = (nowM / 60) * 2 * Math.PI - Math.PI / 2;
+    let endAngle = (endM / 60) * 2 * Math.PI - Math.PI / 2;
 
-      // endAngle が nowAngle より小さい場合（理論上は通常起きないが安全策）
-      if (endAngle <= nowAngle) endAngle += 2 * Math.PI;
-
+    // 今の分から終了分まで塗る
+    if (endM > nowM || (eh !== now.getHours())) {
       ctx.beginPath();
       ctx.moveTo(center, center);
-      ctx.arc(center, center, radius * 0.9, nowAngle, endAngle, false); // 時計回り
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(255, 182, 193, 0.7)'; // ピンク（半透明）
-      ctx.fill();
-
-      // optional: 輪郭を少し描く（濃いピンク）
-      ctx.beginPath();
       ctx.arc(center, center, radius * 0.9, nowAngle, endAngle, false);
-      ctx.strokeStyle = 'rgba(255,102,140,0.9)';
-      ctx.lineWidth = Math.max(2, radius * 0.01);
-      ctx.stroke();
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(255, 182, 193, 0.7)';
+      ctx.fill();
     }
   }
 
-  // 目盛・数字（時間/分）
+  // 目盛
   drawHourNumbers(center, radius);
   if (showMinuteFiveNumbers) drawMinuteFiveNumbers(center, radius);
 
   // 針
   drawHands(center, radius);
 
-  // デジタル表示更新
+  // デジタル
   updateDigitalClock();
 }
 
-/* ------------------------
-   盤面目盛（時間） - 縁取りして見やすく
-   ------------------------ */
 function drawHourNumbers(center, radius) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  const fontSize = Math.max(12, Math.round(radius * 0.16));
-  ctx.font = `${fontSize}px "Noto Sans JP", Arial, sans-serif`;
-  ctx.lineWidth = Math.max(3, fontSize * 0.12);
+  const fontSize = Math.round(radius * 0.16);
+  ctx.font = `${fontSize}px "Noto Sans JP", Arial`;
   ctx.fillStyle = '#082737';
-  ctx.strokeStyle = 'white';
   for (let num = 1; num <= 12; num++) {
     const ang = (num * Math.PI) / 6;
     const x = center + Math.sin(ang) * radius * 0.72;
     const y = center - Math.cos(ang) * radius * 0.72;
-    ctx.strokeText(String(num), x, y);
-    ctx.fillText(String(num), x, y);
+    ctx.fillText(num, x, y);
   }
 }
 
-/* ------------------------
-   盤面目盛（5分ごと） - 縁取りして見やすく
-   ------------------------ */
 function drawMinuteFiveNumbers(center, radius) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  const fontSize = Math.max(10, Math.round(radius * 0.10));
-  ctx.font = `${fontSize}px "Noto Sans JP", Arial, sans-serif`;
-  ctx.lineWidth = Math.max(2, fontSize * 0.1);
+  const fontSize = Math.round(radius * 0.10);
+  ctx.font = `${fontSize}px "Noto Sans JP", Arial`;
   ctx.fillStyle = '#0b4766';
-  ctx.strokeStyle = 'white';
   for (let m = 5; m <= 60; m += 5) {
     const ang = (m * Math.PI) / 30;
     const x = center + Math.sin(ang) * radius * 0.88;
     const y = center - Math.cos(ang) * radius * 0.88;
-    const text = (m === 60 ? '60' : String(m));
-    ctx.strokeText(text, x, y);
-    ctx.fillText(text, x, y);
+    ctx.fillText(m, x, y);
   }
 }
 
-/* ------------------------
-   針描画
-   ------------------------ */
 function drawHands(center, radius) {
   const now = new Date();
-  const hour = now.getHours();
-  const minute = now.getMinutes();
-  const second = now.getSeconds();
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const s = now.getSeconds();
 
-  const hourAngle = ((hour % 12) + minute / 60 + second / 3600) * (Math.PI / 6);
-  const minuteAngle = (minute + second / 60) * (Math.PI / 30);
-  const secondAngle = second * (Math.PI / 30);
+  const hourAngle = ((h % 12) + m / 60) * (Math.PI / 6);
+  const minAngle = (m + s / 60) * (Math.PI / 30);
+  const secAngle = s * (Math.PI / 30);
 
-  function drawHand(angle, lenRatio, width, color) {
-    const x = center + Math.sin(angle) * radius * lenRatio;
-    const y = center - Math.cos(angle) * radius * lenRatio;
+  function hand(angle, len, w, c) {
+    const x = center + Math.sin(angle) * radius * len;
+    const y = center - Math.cos(angle) * radius * len;
     ctx.beginPath();
     ctx.moveTo(center, center);
     ctx.lineTo(x, y);
-    ctx.lineWidth = width;
+    ctx.lineWidth = w;
+    ctx.strokeStyle = c;
     ctx.lineCap = 'round';
-    ctx.strokeStyle = color;
     ctx.stroke();
   }
 
-  drawHand(hourAngle, 0.50, Math.max(4, radius * 0.06), '#143241');
-  drawHand(minuteAngle, 0.75, Math.max(3, radius * 0.045), '#0b76c1');
-  drawHand(secondAngle, 0.88, Math.max(1.5, radius * 0.02), 'red');
-
-  // 中心点
-  ctx.beginPath();
-  ctx.arc(center, center, Math.max(4, radius * 0.03), 0, Math.PI * 2);
-  ctx.fillStyle = '#143241';
-  ctx.fill();
+  hand(hourAngle, 0.5, 6, '#143241');
+  hand(minAngle, 0.75, 4, '#0b76c1');
+  hand(secAngle, 0.88, 2, 'red');
 }
 
-/* ------------------------
-   デジタル時計
-   ------------------------ */
 function updateDigitalClock() {
   const now = new Date();
   const h = now.getHours();
   const m = now.getMinutes();
   const ampm = h < 12 ? '午前' : '午後';
   const h12 = h % 12 === 0 ? 12 : h % 12;
-  digitalEl.textContent = `${ampm}${h12}:${String(m).padStart(2, '0')}`;
+  digitalEl.textContent = `${ampm}${h12}:${String(m).padStart(2,'0')}`;
 }
 
-/* ------------------------
-   Timetable（JSON 読込）
-   ------------------------ */
+/* 時刻表関連 */
 async function loadTimetable(path) {
-  try {
-    const res = await fetch(path);
-    if (!res.ok) throw new Error('読み込み失敗');
-    const raw = await res.json();
-    // フォーマット：「名称」「開始時刻」「終了時刻」
-    timetable = raw.map(item => ({
-      name: item['名称'] || item['name'],
-      start: item['開始時刻'] || item['start'],
-      end: item['終了時刻'] || item['end']
-    })).filter(x => x.name && x.start && x.end);
-  } catch (e) {
-    timetable = [];
-    speak('時刻表の読み込みに失敗しました');
-    console.error(e);
-  }
+  const res = await fetch(path);
+  const raw = await res.json();
+  timetable = raw.map(i => ({
+    name: i['名称'],
+    start: i['開始時刻'],
+    end: i['終了時刻']
+  }));
 }
 
-/* ------------------------
-   リスト描画（全件出すが高さで隠す）+ 現在行を中央へ
-   ------------------------ */
-function renderTimetable() {
-  const listEl = document.getElementById('timetableList');
-  listEl.innerHTML = '';
-
-  if (timetable.length === 0) return;
-
-  // 現在のインデックスを取得
-  const now = new Date();
-  const curMinutes = now.getHours() * 60 + now.getMinutes();
-  let currentIndex = -1;
-
-  timetable.forEach((p, i) => {
-    const [sh, sm] = p.start.split(':').map(Number);
-    const [eh, em] = p.end.split(':').map(Number);
-    const startM = sh * 60 + sm;
-    const endM = eh * 60 + em;
-    if (curMinutes >= startM && curMinutes < endM) {
-      currentIndex = i;
-    }
-  });
-
-  // 全項目を追加
-  timetable.forEach((p, i) => {
-    const div = document.createElement('div');
-    div.className = 'timetable-item';
-    div.textContent = `${p.start}〜${p.end}  ${p.name}`;
-    if (i === currentIndex) div.classList.add('active');
-    listEl.appendChild(div);
-  });
-
-  // 現在行を確実に中央へ（若干の遅延でDOMレイアウト安定後に行う）
-  if (currentIndex >= 0) {
-    // requestAnimationFrame を使って DOM レイアウト後に scrollIntoView を呼ぶ
-    requestAnimationFrame(() => {
-      const activeEl = listEl.querySelector('.active');
-      if (activeEl) {
-        activeEl.scrollIntoView({ block: 'center', behavior: 'auto' });
-      }
-    });
-  }
-}
-
-/* ------------------------
-   現在の期間判定・表示更新
-   ------------------------ */
 function updateCurrentPeriod() {
   const now = new Date();
-  const curMinutes = now.getHours() * 60 + now.getMinutes();
+  const curM = now.getHours()*60+now.getMinutes();
   currentPeriod = {};
   for (const p of timetable) {
-    const [sh, sm] = p.start.split(':').map(Number);
-    const [eh, em] = p.end.split(':').map(Number);
-    const startM = sh * 60 + sm;
-    const endM = eh * 60 + em;
-    if (curMinutes >= startM && curMinutes < endM) {
-      currentPeriod = { name: p.name, start: p.start, end: p.end };
-      break;
-    }
+    const [sh,sm]=p.start.split(':').map(Number);
+    const [eh,em]=p.end.split(':').map(Number);
+    const st=sh*60+sm, et=eh*60+em;
+    if(curM>=st && curM<et){currentPeriod=p;break;}
   }
-  document.getElementById('currentPeriod').textContent = currentPeriod.name || '-';
-  document.getElementById('startTime').textContent = currentPeriod.start || '-';
-  document.getElementById('endTime').textContent = currentPeriod.end || '-';
+  document.getElementById('currentPeriod').textContent=currentPeriod.name||'-';
+  document.getElementById('startTime').textContent=currentPeriod.start||'-';
+  document.getElementById('endTime').textContent=currentPeriod.end||'-';
   renderTimetable();
 }
 
-/* ------------------------
-   音声（機械読み）
-   ------------------------ */
-function speak(text) {
-  if (!('speechSynthesis' in window)) return;
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'ja-JP';
-  u.rate = 0.95;
-  speechSynthesis.cancel();
-  speechSynthesis.speak(u);
-}
-function speakNow(){
-  const n=new Date();
-  const h=n.getHours();
-  const m=n.getMinutes();
-  const am=h<12?'午前':'午後';
-  const h12=h%12||12;
-  speak(`今の時刻は、${am}${h12}時${m}分です`);
-}
-function speakName(){ if (currentPeriod.name) speak(currentPeriod.name); else speak('現在、授業はありません'); }
-function speakStart(){ if (currentPeriod.name) speak(`${currentPeriod.name}は、${currentPeriod.start}から始まりました`); }
-function speakEnd(){ if (currentPeriod.name) speak(`${currentPeriod.name}は、${currentPeriod.end}に終わります`); }
-function speakRemain(){
-  if (currentPeriod.end) {
-    const now = new Date();
-    const [eh,em] = currentPeriod.end.split(':').map(Number);
-    const end = new Date(); end.setHours(eh, em, 0, 0);
-    const diff = Math.max(0, Math.floor((end - now)/60000));
-    speak(`${currentPeriod.name}は、あと${diff}分で終わります`);
-  } else {
-    speak('現在、授業はありません');
-  }
+function renderTimetable(){
+  const el=document.getElementById('timetableList');el.innerHTML='';
+  const now=new Date(),curM=now.getHours()*60+now.getMinutes();
+  let idx=-1;
+  timetable.forEach((p,i)=>{const [sh,sm]=p.start.split(':').map(Number);
+    const [eh,em]=p.end.split(':').map(Number);
+    const st=sh*60+sm,et=eh*60+em;
+    if(curM>=st&&curM<et)idx=i;});
+  timetable.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.className='timetable-item';
+    d.textContent=`${p.start}〜${p.end} ${p.name}`;
+    if(i===idx)d.classList.add('active');
+    el.appendChild(d);
+  });
+  if(idx>=0)requestAnimationFrame(()=>{el.querySelector('.active').scrollIntoView({block:'center'});});
 }
 
-/* ------------------------
-   ボタン・初期化
-   ------------------------ */
-function toggleMinuteFive() {
-  showMinuteFiveNumbers = !showMinuteFiveNumbers;
-  document.getElementById('btn-toggle-minutes').textContent =
-    showMinuteFiveNumbers ? '分表示（5分ごと）ON' : '分表示（5分ごと）OFF';
+/* 音声 */
+function speak(t){if(!('speechSynthesis'in window))return;const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';speechSynthesis.cancel();speechSynthesis.speak(u);}
+function speakNow(){const n=new Date(),h=n.getHours(),m=n.getMinutes();const am=h<12?'午前':'午後';const h12=h%12||12;speak(`今の時刻は、${am}${h12}時${m}分です`);}
+function speakName(){if(currentPeriod.name)speak(currentPeriod.name);}
+function speakStart(){if(currentPeriod.name)speak(`${currentPeriod.name}は、${currentPeriod.start}から始まりました`);}
+function speakEnd(){if(currentPeriod.name)speak(`${currentPeriod.name}は、${currentPeriod.end}に終わります`);}
+function speakRemain(){if(currentPeriod.end){const n=new Date();const[eh,em]=currentPeriod.end.split(':').map(Number);const e=new Date();e.setHours(eh,em,0,0);const d=Math.max(0,Math.floor((e-n)/60000));speak(`${currentPeriod.name}は、あと${d}分で終わります`);}}
+
+/* 初期化 */
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('btn-now').onclick=speakNow;
+  document.getElementById('btn-name').onclick=speakName;
+  document.getElementById('btn-start').onclick=speakStart;
+  document.getElementById('btn-end').onclick=speakEnd;
+  document.getElementById('btn-remain').onclick=speakRemain;
+  document.getElementById('btn-toggle-minutes').onclick=()=>{showMinuteFiveNumbers=!showMinuteFiveNumbers;drawClock();};
+
+  document.querySelectorAll('.tt-btn').forEach(b=>b.onclick=()=>{loadTimetable(b.dataset.file).then(()=>updateCurrentPeriod());});
+  loadTimetable('data/timetable1.json').then(()=>updateCurrentPeriod());
   drawClock();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  // ボタンイベント
-  document.getElementById('btn-now').addEventListener('click', speakNow);
-  document.getElementById('btn-name').addEventListener('click', speakName);
-  document.getElementById('btn-start').addEventListener('click', speakStart);
-  document.getElementById('btn-end').addEventListener('click', speakEnd);
-  document.getElementById('btn-remain').addEventListener('click', speakRemain);
-  document.getElementById('btn-toggle-minutes').addEventListener('click', toggleMinuteFive);
-
-  document.querySelectorAll('.tt-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const path = btn.dataset.file;
-      loadTimetable(path).then(() => {
-        updateCurrentPeriod();
-        drawClock();
-      });
-    });
-  });
-
-  // 初期ロード（時刻表1）
-  loadTimetable('data/timetable1.json').then(() => {
-    updateCurrentPeriod();
-    drawClock();
-  });
-
-  // 毎秒、先に現在期間を更新してから描画する（描画は最新データで行う）
-  setInterval(() => {
-    updateCurrentPeriod();
-    drawClock();
-  }, 1000);
+  setInterval(()=>{updateCurrentPeriod();drawClock();},1000);
 });
