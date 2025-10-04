@@ -12,22 +12,23 @@
       <!-- 左：時刻表リスト -->
       <div class="timetable-list" id="timetableList" aria-label="時刻表"></div>
 
-      <!-- 中央：アナログ＋デジタル時計 -->
+      <!-- 中央：アナログ時計＋デジタル時計＋あと○分 -->
       <div class="clock-area">
         <canvas id="analogClock" aria-label="アナログ時計"></canvas>
-        <div id="digitalClock" aria-live="polite"></div>
+
+        <div class="time-display">
+          <div id="digitalClock" aria-live="polite"></div>
+          <div id="remainTime" class="remain-time">ー</div>
+        </div>
       </div>
 
-      <!-- 右：残り時間表示＋リスト切替 -->
-      <div class="side-panel">
-        <div class="remain-time" id="remainTime">ー</div>
-        <div class="side-buttons">
-          <button class="tt-btn" data-file="data/timetable1.json">リスト1</button>
-          <button class="tt-btn" data-file="data/timetable2.json">リスト2</button>
-          <button class="tt-btn" data-file="data/timetable3.json">リスト3</button>
-          <button class="tt-btn" data-file="data/timetable4.json">リスト4</button>
-          <button class="tt-btn" data-file="data/timetable5.json">リスト5</button>
-        </div>
+      <!-- 右：リスト切替 -->
+      <div class="side-buttons">
+        <button class="tt-btn" data-file="data/timetable1.json">リスト1</button>
+        <button class="tt-btn" data-file="data/timetable2.json">リスト2</button>
+        <button class="tt-btn" data-file="data/timetable3.json">リスト3</button>
+        <button class="tt-btn" data-file="data/timetable4.json">リスト4</button>
+        <button class="tt-btn" data-file="data/timetable5.json">リスト5</button>
       </div>
     </div>
 
