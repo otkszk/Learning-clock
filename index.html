@@ -10,20 +10,22 @@
   <div class="app-container">
     <div class="main-layout">
       <!-- 左：時刻表リスト -->
-      <div class="timetable-list" id="timetableList"></div>
+      <div class="timetable-list" id="timetableList" aria-label="時刻表"></div>
 
-      <!-- 右：アナログ＆デジタル時計 -->
+      <!-- 中央：アナログ＋デジタル時計 -->
       <div class="clock-area">
         <canvas id="analogClock" aria-label="アナログ時計"></canvas>
         <div id="digitalClock" aria-live="polite"></div>
       </div>
-    </div>
 
-    <!-- 現在の授業／時間 -->
-    <div class="schedule-info">
-      <p>今の時間：<span id="currentPeriod">-</span></p>
-      <p>開始時刻：<span id="startTime">-</span></p>
-      <p>終了時刻：<span id="endTime">-</span></p>
+      <!-- 右：リスト切替ボタン -->
+      <div class="side-buttons">
+        <button class="tt-btn" data-file="data/timetable1.json">リスト1</button>
+        <button class="tt-btn" data-file="data/timetable2.json">リスト2</button>
+        <button class="tt-btn" data-file="data/timetable3.json">リスト3</button>
+        <button class="tt-btn" data-file="data/timetable4.json">リスト4</button>
+        <button class="tt-btn" data-file="data/timetable5.json">リスト5</button>
+      </div>
     </div>
 
     <!-- 操作用ボタン -->
@@ -34,15 +36,6 @@
       <button id="btn-end">終了時刻</button>
       <button id="btn-remain">後何分</button>
       <button id="btn-toggle-minutes">分表示（5分ごと）ON</button>
-    </div>
-
-    <!-- 時刻表切り替え -->
-    <div class="timetable-buttons">
-      <button class="tt-btn" data-file="data/timetable1.json">時刻表1</button>
-      <button class="tt-btn" data-file="data/timetable2.json">時刻表2</button>
-      <button class="tt-btn" data-file="data/timetable3.json">時刻表3</button>
-      <button class="tt-btn" data-file="data/timetable4.json">時刻表4</button>
-      <button class="tt-btn" data-file="data/timetable5.json">時刻表5</button>
     </div>
   </div>
 
