@@ -6,7 +6,9 @@ const canvas = document.getElementById('analogClock');
 const ctx = canvas.getContext('2d');
 const digitalEl = document.getElementById('digitalClock');
 
-/* Canvas 高DPI対応 */
+/* -----------------------------
+   Canvasリサイズ（高DPI対応）
+----------------------------- */
 function resizeCanvasForDPR() {
   const cssSize = Math.min(window.innerWidth * 0.9, 420);
   const dpr = window.devicePixelRatio || 1;
@@ -16,13 +18,10 @@ function resizeCanvasForDPR() {
   canvas.height = Math.round(cssSize * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
-resizeCanvasForDPR();
-window.addEventListener('resize', () => {
-  resizeCanvasForDPR();
-  drawClock();
-});
 
-/* 時計描画 */
+/* -----------------------------
+   時計描画関連
+----------------------------- */
 function getCanvasMetrics() {
   const cssSize = canvas.clientWidth;
   const center = cssSize / 2;
@@ -31,8 +30,8 @@ function getCanvasMetrics() {
 }
 
 function drawClock() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
   const { center, radius } = getCanvasMetrics();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // 盤面
   ctx.beginPath();
@@ -43,29 +42,24 @@ function drawClock() {
   ctx.strokeStyle = '#2b3a4a';
   ctx.stroke();
 
-  // ★ 分針基準の「残り部分」塗り
+  // ★現在の時間帯の「残り部分」塗り（長針基準）
   if (currentPeriod.start && currentPeriod.end) {
     const now = new Date();
     const [eh, em] = currentPeriod.end.split(':').map(Number);
     const nowM = now.getMinutes();
 
-    // 分針基準の角度
-    let nowAngle = (nowM / 60) * 2 * Math.PI - Math.PI / 2;
-    let endAngle = (em / 60) * 2 * Math.PI - Math.PI / 2;
+    const nowAngle = (nowM / 60) * 2 * Math.PI - Math.PI / 2;
+    const endAngle = (em / 60) * 2 * Math.PI - Math.PI / 2;
 
-    // 時間をまたぐときは補正
-    if (eh !== now.getHours() && endAngle < nowAngle) {
-      endAngle += 2 * Math.PI;
-    }
+    let correctedEnd = endAngle;
+    if (correctedEnd <= nowAngle) correctedEnd += 2 * Math.PI;
 
-    if (endAngle > nowAngle) {
-      ctx.beginPath();
-      ctx.moveTo(center, center);
-      ctx.arc(center, center, radius * 0.9, nowAngle, endAngle, false);
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(255, 182, 193, 0.7)';
-      ctx.fill();
-    }
+    ctx.beginPath();
+    ctx.moveTo(center, center);
+    ctx.arc(center, center, radius * 0.9, nowAngle, correctedEnd, false);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(255, 182, 193, 0.6)';
+    ctx.fill();
   }
 
   drawHourNumbers(center, radius);
@@ -74,7 +68,6 @@ function drawClock() {
   updateDigitalClock();
 }
 
-/* 目盛 */
 function drawHourNumbers(center, radius) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -139,15 +132,23 @@ function updateDigitalClock() {
   digitalEl.textContent = `${ampm}${h12}:${String(m).padStart(2, '0')}`;
 }
 
-/* 時刻表 */
+/* -----------------------------
+   時刻表表示・更新
+----------------------------- */
 async function loadTimetable(path) {
-  const res = await fetch(path);
-  const raw = await res.json();
-  timetable = raw.map(i => ({
-    name: i['名称'],
-    start: i['開始時刻'],
-    end: i['終了時刻']
-  }));
+  try {
+    const res = await fetch(path);
+    if (!res.ok) throw new Error(`ファイルが読み込めません: ${path}`);
+    const raw = await res.json();
+    timetable = raw.map(i => ({
+      name: i['名称'],
+      start: i['開始時刻'],
+      end: i['終了時刻']
+    }));
+    updateCurrentPeriod();
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 function updateCurrentPeriod() {
@@ -157,8 +158,12 @@ function updateCurrentPeriod() {
   for (const p of timetable) {
     const [sh, sm] = p.start.split(':').map(Number);
     const [eh, em] = p.end.split(':').map(Number);
-    const st = sh * 60 + sm, et = eh * 60 + em;
-    if (curM >= st && curM < et) { currentPeriod = p; break; }
+    const st = sh * 60 + sm;
+    const et = eh * 60 + em;
+    if (curM >= st && curM < et) {
+      currentPeriod = p;
+      break;
+    }
   }
   renderTimetable();
 }
@@ -166,14 +171,18 @@ function updateCurrentPeriod() {
 function renderTimetable() {
   const el = document.getElementById('timetableList');
   el.innerHTML = '';
-  const now = new Date(), curM = now.getHours() * 60 + now.getMinutes();
+  const now = new Date();
+  const curM = now.getHours() * 60 + now.getMinutes();
   let idx = -1;
+
   timetable.forEach((p, i) => {
     const [sh, sm] = p.start.split(':').map(Number);
     const [eh, em] = p.end.split(':').map(Number);
-    const st = sh * 60 + sm, et = eh * 60 + em;
+    const st = sh * 60 + sm;
+    const et = eh * 60 + em;
     if (curM >= st && curM < et) idx = i;
   });
+
   timetable.forEach((p, i) => {
     const d = document.createElement('div');
     d.className = 'timetable-item';
@@ -181,12 +190,18 @@ function renderTimetable() {
     if (i === idx) d.classList.add('active');
     el.appendChild(d);
   });
-  if (idx >= 0) requestAnimationFrame(() => {
-    el.querySelector('.active').scrollIntoView({ block: 'center' });
-  });
+
+  if (idx >= 0) {
+    requestAnimationFrame(() => {
+      const active = el.querySelector('.active');
+      if (active) active.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    });
+  }
 }
 
-/* 音声 */
+/* -----------------------------
+   音声機能
+----------------------------- */
 function speak(t) {
   if (!('speechSynthesis' in window)) return;
   const u = new SpeechSynthesisUtterance(t);
@@ -194,6 +209,7 @@ function speak(t) {
   speechSynthesis.cancel();
   speechSynthesis.speak(u);
 }
+
 function speakNow() {
   const n = new Date(), h = n.getHours(), m = n.getMinutes();
   const am = h < 12 ? '午前' : '午後'; const h12 = h % 12 || 12;
@@ -211,8 +227,19 @@ function speakRemain() {
   }
 }
 
-/* 初期化 */
-document.addEventListener('DOMContentLoaded', () => {
+/* -----------------------------
+   初期化処理
+----------------------------- */
+function init() {
+  resizeCanvasForDPR();
+  loadTimetable('data/timetable1.json');
+  drawClock();
+  setInterval(() => {
+    updateCurrentPeriod();
+    drawClock();
+  }, 1000);
+
+  // ボタン設定
   document.getElementById('btn-now').onclick = speakNow;
   document.getElementById('btn-name').onclick = speakName;
   document.getElementById('btn-start').onclick = speakStart;
@@ -222,12 +249,9 @@ document.addEventListener('DOMContentLoaded', () => {
     showMinuteFiveNumbers = !showMinuteFiveNumbers;
     drawClock();
   };
-
-  document.querySelectorAll('.tt-btn').forEach(b => b.onclick = () => {
-    loadTimetable(b.dataset.file).then(() => updateCurrentPeriod());
+  document.querySelectorAll('.tt-btn').forEach(b => {
+    b.onclick = () => loadTimetable(b.dataset.file);
   });
+}
 
-  loadTimetable('data/timetable1.json').then(() => updateCurrentPeriod());
-  drawClock();
-  setInterval(() => { updateCurrentPeriod(); drawClock(); }, 1000);
-});
+document.addEventListener('DOMContentLoaded', init);
