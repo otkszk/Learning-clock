@@ -45,7 +45,6 @@ body {
   padding: 8px 10px;
   border-radius: 6px;
   margin-bottom: 6px;
-  cursor: pointer;
 }
 
 .timetable-item.active {
@@ -68,9 +67,17 @@ body {
   height: 90vw;
   max-height: var(--max-clock-size);
   border-radius: 50%;
-  border: none; /* ★外側の円削除 */
+  border: none;
   background: #fff;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.07);
+}
+
+/* デジタル時計＋あと○分 横並び */
+.time-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
 }
 
 /* デジタル時計（大きく） */
@@ -78,16 +85,15 @@ body {
   font-size: clamp(40px, 6vw, 60px);
   font-weight: 800;
   color: #0b3760;
-  width: 100%;
-  text-align: center;
 }
 
-/* 残り時間表示 */
+/* あと○分（同じ大きさ・赤色） */
 .remain-time {
-  font-size: clamp(28px, 4vw, 36px);
+  font-size: clamp(40px, 6vw, 60px);
+  font-weight: 800;
   color: red;
-  margin-bottom: 20px;
-  font-weight: bold;
+  min-width: 160px;
+  text-align: left;
 }
 
 /* 操作ボタン */
@@ -112,13 +118,7 @@ button {
 
 button:active { transform: translateY(1px); }
 
-/* 右側のリスト切替ボタン（縦配置・小さめ） */
-.side-panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
+/* 右側のリスト切替ボタン */
 .side-buttons {
   display: flex;
   flex-direction: column;
