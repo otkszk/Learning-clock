@@ -18,24 +18,24 @@
         <div id="digitalClock" aria-live="polite"></div>
       </div>
 
-      <!-- 右：リスト切替ボタン -->
-      <div class="side-buttons">
-        <button class="tt-btn" data-file="data/timetable1.json">リスト1</button>
-        <button class="tt-btn" data-file="data/timetable2.json">リスト2</button>
-        <button class="tt-btn" data-file="data/timetable3.json">リスト3</button>
-        <button class="tt-btn" data-file="data/timetable4.json">リスト4</button>
-        <button class="tt-btn" data-file="data/timetable5.json">リスト5</button>
+      <!-- 右：残り時間表示＋リスト切替 -->
+      <div class="side-panel">
+        <div class="remain-time" id="remainTime">ー</div>
+        <div class="side-buttons">
+          <button class="tt-btn" data-file="data/timetable1.json">リスト1</button>
+          <button class="tt-btn" data-file="data/timetable2.json">リスト2</button>
+          <button class="tt-btn" data-file="data/timetable3.json">リスト3</button>
+          <button class="tt-btn" data-file="data/timetable4.json">リスト4</button>
+          <button class="tt-btn" data-file="data/timetable5.json">リスト5</button>
+        </div>
       </div>
     </div>
 
     <!-- 操作用ボタン -->
     <div class="controls">
       <button id="btn-now">今のじこく</button>
-      <button id="btn-name">名称</button>
-      <button id="btn-start">開始時刻</button>
-      <button id="btn-end">終了時刻</button>
-      <button id="btn-remain">後何分</button>
-      <button id="btn-toggle-minutes">分表示（5分ごと）ON</button>
+      <button id="btn-remain">あと〇分</button>
+      <button id="btn-toggle-minutes">5分表示</button>
     </div>
   </div>
 
