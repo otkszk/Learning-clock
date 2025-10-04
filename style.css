@@ -68,7 +68,7 @@ body {
   height: 90vw;
   max-height: var(--max-clock-size);
   border-radius: 50%;
-  border: 6px solid #2b3a4a;
+  border: none; /* ★外側の円削除 */
   background: #fff;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.07);
 }
@@ -80,6 +80,14 @@ body {
   color: #0b3760;
   width: 100%;
   text-align: center;
+}
+
+/* 残り時間表示 */
+.remain-time {
+  font-size: clamp(28px, 4vw, 36px);
+  color: red;
+  margin-bottom: 20px;
+  font-weight: bold;
 }
 
 /* 操作ボタン */
@@ -105,6 +113,12 @@ button {
 button:active { transform: translateY(1px); }
 
 /* 右側のリスト切替ボタン（縦配置・小さめ） */
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .side-buttons {
   display: flex;
   flex-direction: column;
