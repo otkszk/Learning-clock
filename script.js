@@ -1,7 +1,7 @@
 let timetable = [];
 let currentPeriod = {};
 let showMinuteFiveNumbers = true;
-let showMinuteOneNumbers = false; // ★1分表示フラグ追加
+let showMinuteOneNumbers = false;
 
 const canvas = document.getElementById('analogClock');
 const ctx = canvas.getContext('2d');
@@ -31,7 +31,7 @@ function drawClock() {
   const { center, radius } = getCanvasMetrics();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 背景
+  // 背景円
   ctx.beginPath();
   ctx.arc(center, center, radius * 0.95, 0, Math.PI * 2);
   ctx.fillStyle = '#ffffff';
@@ -40,25 +40,25 @@ function drawClock() {
   ctx.strokeStyle = '#000000';
   ctx.stroke();
 
-  // ピンクの残り時間領域
+  // ✅ ピンクの残り時間部分（現在〜終了）
   if (currentPeriod.start && currentPeriod.end) {
     const now = new Date();
     const totalSecsNow = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-    const [eh, em] = currentPeriod.end.split(':').map(Number);
-    const endSecs = eh * 3600 + em * 60;
+
     const [sh, sm] = currentPeriod.start.split(':').map(Number);
     const startSecs = sh * 3600 + sm * 60;
+    const [eh, em] = currentPeriod.end.split(':').map(Number);
+    const endSecs = eh * 3600 + em * 60;
 
     const nowAngle = ((totalSecsNow % 3600) / 3600) * 2 * Math.PI - Math.PI / 2;
     const endAngle = ((endSecs % 3600) / 3600) * 2 * Math.PI - Math.PI / 2;
-    const startAngle = ((startSecs % 3600) / 3600) * 2 * Math.PI - Math.PI / 2;
 
-    let correctedNow = nowAngle;
-    if (correctedNow < startAngle) correctedNow += 2 * Math.PI;
+    let correctedEnd = endAngle;
+    if (correctedEnd < nowAngle) correctedEnd += 2 * Math.PI;
 
     ctx.beginPath();
     ctx.moveTo(center, center);
-    ctx.arc(center, center, radius * 0.9, startAngle, correctedNow, false);
+    ctx.arc(center, center, radius * 0.9, nowAngle, correctedEnd, false);
     ctx.closePath();
     ctx.fillStyle = 'rgba(255, 182, 193, 0.6)';
     ctx.fill();
@@ -72,7 +72,7 @@ function drawClock() {
   updateRemainDisplay();
 }
 
-/* 時間表示 */
+/* 時間・分表示 */
 function drawHourNumbers(center, radius) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -86,7 +86,6 @@ function drawHourNumbers(center, radius) {
   }
 }
 
-/* 5分表示 */
 function drawMinuteFiveNumbers(center, radius) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -100,7 +99,6 @@ function drawMinuteFiveNumbers(center, radius) {
   }
 }
 
-/* ★1分表示 */
 function drawMinuteOneNumbers(center, radius) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -138,11 +136,11 @@ function drawHands(center, radius) {
   }
 
   hand(hourAngle, 0.5, 6, '#143241');   // 時針
-  hand(minAngle, 0.75, 4, 'red');       // 分針（赤）
-  hand(secAngle, 0.88, 2, '#000000');   // 秒針（黒）
+  hand(minAngle, 0.75, 4, 'red');       // 分針
+  hand(secAngle, 0.88, 2, '#000000');   // 秒針
 }
 
-/* デジタル時計と残り時間 */
+/* デジタル時計・残り時間 */
 function updateDigitalClock() {
   const now = new Date();
   const h = now.getHours();
@@ -165,7 +163,7 @@ function updateRemainDisplay() {
   remainEl.textContent = `あと${diff}分`;
 }
 
-/* 時刻表関連 */
+/* 時刻表 */
 async function loadTimetable(path) {
   const res = await fetch(path);
   const raw = await res.json();
@@ -194,7 +192,7 @@ function updateCurrentPeriod() {
   renderTimetable();
 }
 
-/* リスト描画 */
+/* リスト */
 function renderTimetable() {
   const el = document.getElementById('timetableList');
   el.innerHTML = '';
