@@ -17,7 +17,7 @@ body {
 }
 
 .left-panel {
-  flex: 1.3; /* ✅ 横幅を広げる */
+  flex: 1.3;
   display: flex;
   justify-content: center;
 }
@@ -36,7 +36,7 @@ body {
   align-items: center;
 }
 
-/* ✅ リストの幅を拡大 */
+/* ✅ リストを少し広く */
 .timetable-list {
   text-align: left;
   max-width: 340px;
@@ -59,7 +59,7 @@ body {
 }
 
 .timetable-item.active {
-  background-color: #fff176; /* ✅ 黄色ハイライト */
+  background-color: #fff176;
   font-weight: bold;
 }
 
@@ -75,6 +75,15 @@ canvas {
   align-items: center;
   justify-content: center;
   gap: 15px;
+}
+
+/* ✅ 非表示でもスペース確保（visibility） */
+.digital-clock, .remain-time {
+  transition: opacity 0.3s ease;
+}
+.digital-clock.hidden, .remain-time.hidden {
+  visibility: hidden;
+  opacity: 0;
 }
 
 .digital-clock {
