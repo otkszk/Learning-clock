@@ -2,6 +2,7 @@ let timetable = [];
 let currentPeriod = {};
 let showMinuteFiveNumbers = true;
 let showMinuteOneNumbers = false;
+let digitalVisible = true; // ✅ デジタル時計表示フラグ
 
 const canvas = document.getElementById('analogClock');
 const ctx = canvas.getContext('2d');
@@ -99,15 +100,21 @@ function drawMinuteFiveNumbers(center, radius) {
   }
 }
 
+/* ✅ 1分表示：現在の分は赤で表示 */
 function drawMinuteOneNumbers(center, radius) {
+  const now = new Date();
+  const currentMinute = now.getMinutes();
+
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.font = `${Math.round(radius * 0.06)}px "Noto Sans JP"`;
-  ctx.fillStyle = '#333';
+
   for (let m = 1; m <= 60; m++) {
     const ang = (m * Math.PI) / 30;
     const x = center + Math.sin(ang) * radius * 0.9;
     const y = center - Math.cos(ang) * radius * 0.9;
+
+    ctx.fillStyle = (m === currentMinute || (m === 60 && currentMinute === 0)) ? 'red' : '#333';
     ctx.fillText(m, x, y);
   }
 }
@@ -135,9 +142,9 @@ function drawHands(center, radius) {
     ctx.stroke();
   }
 
-  hand(hourAngle, 0.5, 6, '#143241');   // 時針
-  hand(minAngle, 0.75, 4, 'red');       // 分針
-  hand(secAngle, 0.88, 2, '#000000');   // 秒針
+  hand(hourAngle, 0.5, 6, '#143241');
+  hand(minAngle, 0.75, 4, 'red');
+  hand(secAngle, 0.88, 2, '#000000');
 }
 
 /* デジタル時計・残り時間 */
@@ -148,6 +155,10 @@ function updateDigitalClock() {
   const ampm = h < 12 ? '午前' : '午後';
   const h12 = h % 12 === 0 ? 12 : h % 12;
   digitalEl.textContent = `${ampm}${h12}:${String(m).padStart(2, '0')}`;
+
+  // ✅ 表示ON/OFF
+  digitalEl.style.display = digitalVisible ? 'block' : 'none';
+  remainEl.style.display = digitalVisible ? 'block' : 'none';
 }
 
 function updateRemainDisplay() {
@@ -259,6 +270,11 @@ function init() {
     updateCurrentPeriod();
     drawClock();
   }, 1000);
+
+  document.getElementById('btn-toggle-digital').onclick = () => {
+    digitalVisible = !digitalVisible;
+    updateDigitalClock();
+  };
 
   document.getElementById('btn-now').onclick = speakNow;
   document.getElementById('btn-remain').onclick = speakRemain;
