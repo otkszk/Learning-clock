@@ -36,27 +36,31 @@ body {
   align-items: center;
 }
 
+/* ✅ リストの文字を大きく戻す */
 .timetable-list {
   text-align: left;
   max-width: 260px;
-  font-size: clamp(16px, 3vw, 20px);
+  font-size: clamp(20px, 3.5vw, 26px);
   max-height: 9em;
   overflow-y: auto;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
   background: #fff;
-  padding: 6px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
 .timetable-item {
-  padding: 4px;
-  border-radius: 4px;
+  padding: 6px;
+  border-radius: 6px;
+  margin-bottom: 4px;
 }
+
+/* ✅ 現在時刻は黄色でハイライト */
 .timetable-item.active {
-  background-color: #ffcccc;
+  background-color: #fff176;
   font-weight: bold;
 }
 
