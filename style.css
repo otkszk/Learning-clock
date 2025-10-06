@@ -17,7 +17,7 @@ body {
 }
 
 .left-panel {
-  flex: 1;
+  flex: 1.3; /* ✅ 横幅を広げる */
   display: flex;
   justify-content: center;
 }
@@ -36,17 +36,17 @@ body {
   align-items: center;
 }
 
-/* ✅ リストの文字を大きく戻す */
+/* ✅ リストの幅を拡大 */
 .timetable-list {
   text-align: left;
-  max-width: 260px;
+  max-width: 340px;
   font-size: clamp(20px, 3.5vw, 26px);
   max-height: 9em;
   overflow-y: auto;
   border: 2px solid #ccc;
   border-radius: 10px;
   background: #fff;
-  padding: 8px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -58,9 +58,8 @@ body {
   margin-bottom: 4px;
 }
 
-/* ✅ 現在時刻は黄色でハイライト */
 .timetable-item.active {
-  background-color: #fff176;
+  background-color: #fff176; /* ✅ 黄色ハイライト */
   font-weight: bold;
 }
 
