@@ -1,42 +1,41 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>時計アプリ</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app-container">
-    <div class="main-layout">
-      <!-- 左：時刻表リスト -->
-      <div class="timetable-list" id="timetableList" aria-label="時刻表"></div>
+    <div class="left-panel">
+      <div id="timetableList" class="timetable-list"></div>
+    </div>
 
-      <!-- 中央：アナログ時計＋デジタル時計＋あと○分 -->
-      <div class="clock-area">
-        <canvas id="analogClock" aria-label="アナログ時計"></canvas>
+    <div class="center-panel">
+      <canvas id="analogClock" aria-label="アナログ時計"></canvas>
 
-        <div class="time-display">
-          <div id="digitalClock" aria-live="polite"></div>
-          <div id="remainTime" class="remain-time">ー</div>
-        </div>
+      <div class="digital-area">
+        <div id="digitalClock" class="digital-clock">--:--</div>
+        <div id="remainTime" class="remain-time">ー</div>
       </div>
 
-      <!-- 右：リスト切替 -->
-      <div class="side-buttons">
+      <div class="buttons">
+        <button id="btn-now">今のじこく</button>
+        <button id="btn-remain">あと〇分</button>
+        <button id="btn-toggle-minutes">5分表示</button>
+        <button id="btn-toggle-minutes1">1分表示</button>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="timetable-buttons">
         <button class="tt-btn" data-file="data/timetable1.json">リスト1</button>
         <button class="tt-btn" data-file="data/timetable2.json">リスト2</button>
         <button class="tt-btn" data-file="data/timetable3.json">リスト3</button>
         <button class="tt-btn" data-file="data/timetable4.json">リスト4</button>
         <button class="tt-btn" data-file="data/timetable5.json">リスト5</button>
       </div>
-    </div>
-
-    <!-- 操作用ボタン -->
-    <div class="controls">
-      <button id="btn-now">今のじこく</button>
-      <button id="btn-remain">あと〇分</button>
-      <button id="btn-toggle-minutes">5分表示</button>
     </div>
   </div>
 
