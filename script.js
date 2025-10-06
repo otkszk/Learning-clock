@@ -1,13 +1,14 @@
 let timetable = [];
 let currentPeriod = {};
 let showMinuteFiveNumbers = true;
+let showMinuteOneNumbers = false; // ★1分表示フラグ追加
 
 const canvas = document.getElementById('analogClock');
 const ctx = canvas.getContext('2d');
 const digitalEl = document.getElementById('digitalClock');
 const remainEl = document.getElementById('remainTime');
 
-/* Canvas サイズ調整 */
+/* Canvasサイズ */
 function resizeCanvasForDPR() {
   const cssSize = Math.min(window.innerWidth * 0.9, 420);
   const dpr = window.devicePixelRatio || 1;
@@ -30,30 +31,34 @@ function drawClock() {
   const { center, radius } = getCanvasMetrics();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 背景（白＋黒枠）
+  // 背景
   ctx.beginPath();
   ctx.arc(center, center, radius * 0.95, 0, Math.PI * 2);
   ctx.fillStyle = '#ffffff';
   ctx.fill();
   ctx.lineWidth = Math.max(4, radius * 0.03);
-  ctx.strokeStyle = '#000000'; // ★黒枠を追加
+  ctx.strokeStyle = '#000000';
   ctx.stroke();
 
-  // ピンク残り部分（毎秒更新対応）
+  // ピンクの残り時間領域
   if (currentPeriod.start && currentPeriod.end) {
     const now = new Date();
     const totalSecsNow = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
     const [eh, em] = currentPeriod.end.split(':').map(Number);
     const endSecs = eh * 3600 + em * 60;
+    const [sh, sm] = currentPeriod.start.split(':').map(Number);
+    const startSecs = sh * 3600 + sm * 60;
 
     const nowAngle = ((totalSecsNow % 3600) / 3600) * 2 * Math.PI - Math.PI / 2;
     const endAngle = ((endSecs % 3600) / 3600) * 2 * Math.PI - Math.PI / 2;
-    let correctedEnd = endAngle;
-    if (correctedEnd <= nowAngle) correctedEnd += 2 * Math.PI;
+    const startAngle = ((startSecs % 3600) / 3600) * 2 * Math.PI - Math.PI / 2;
+
+    let correctedNow = nowAngle;
+    if (correctedNow < startAngle) correctedNow += 2 * Math.PI;
 
     ctx.beginPath();
     ctx.moveTo(center, center);
-    ctx.arc(center, center, radius * 0.9, nowAngle, correctedEnd, false);
+    ctx.arc(center, center, radius * 0.9, startAngle, correctedNow, false);
     ctx.closePath();
     ctx.fillStyle = 'rgba(255, 182, 193, 0.6)';
     ctx.fill();
@@ -61,16 +66,17 @@ function drawClock() {
 
   drawHourNumbers(center, radius);
   if (showMinuteFiveNumbers) drawMinuteFiveNumbers(center, radius);
+  if (showMinuteOneNumbers) drawMinuteOneNumbers(center, radius);
   drawHands(center, radius);
   updateDigitalClock();
   updateRemainDisplay();
 }
 
+/* 時間表示 */
 function drawHourNumbers(center, radius) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  const fontSize = Math.round(radius * 0.16);
-  ctx.font = `${fontSize}px "Noto Sans JP", Arial`;
+  ctx.font = `${Math.round(radius * 0.16)}px "Noto Sans JP"`;
   ctx.fillStyle = '#082737';
   for (let num = 1; num <= 12; num++) {
     const ang = (num * Math.PI) / 6;
@@ -80,16 +86,30 @@ function drawHourNumbers(center, radius) {
   }
 }
 
+/* 5分表示 */
 function drawMinuteFiveNumbers(center, radius) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  const fontSize = Math.round(radius * 0.1);
-  ctx.font = `${fontSize}px "Noto Sans JP", Arial`;
+  ctx.font = `${Math.round(radius * 0.1)}px "Noto Sans JP"`;
   ctx.fillStyle = '#0b4766';
   for (let m = 5; m <= 60; m += 5) {
     const ang = (m * Math.PI) / 30;
     const x = center + Math.sin(ang) * radius * 0.88;
     const y = center - Math.cos(ang) * radius * 0.88;
+    ctx.fillText(m, x, y);
+  }
+}
+
+/* ★1分表示 */
+function drawMinuteOneNumbers(center, radius) {
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = `${Math.round(radius * 0.06)}px "Noto Sans JP"`;
+  ctx.fillStyle = '#333';
+  for (let m = 1; m <= 60; m++) {
+    const ang = (m * Math.PI) / 30;
+    const x = center + Math.sin(ang) * radius * 0.9;
+    const y = center - Math.cos(ang) * radius * 0.9;
     ctx.fillText(m, x, y);
   }
 }
@@ -117,12 +137,12 @@ function drawHands(center, radius) {
     ctx.stroke();
   }
 
-  hand(hourAngle, 0.5, 6, '#143241');   // 時針：濃紺
-  hand(minAngle, 0.75, 4, 'red');       // ★分針：赤
-  hand(secAngle, 0.88, 2, '#000000');   // ★秒針：黒
+  hand(hourAngle, 0.5, 6, '#143241');   // 時針
+  hand(minAngle, 0.75, 4, 'red');       // 分針（赤）
+  hand(secAngle, 0.88, 2, '#000000');   // 秒針（黒）
 }
 
-/* デジタル時計 */
+/* デジタル時計と残り時間 */
 function updateDigitalClock() {
   const now = new Date();
   const h = now.getHours();
@@ -132,7 +152,6 @@ function updateDigitalClock() {
   digitalEl.textContent = `${ampm}${h12}:${String(m).padStart(2, '0')}`;
 }
 
-/* 残り時間表示（右側） */
 function updateRemainDisplay() {
   if (!currentPeriod.end) {
     remainEl.textContent = 'ー';
@@ -175,7 +194,7 @@ function updateCurrentPeriod() {
   renderTimetable();
 }
 
-/* 時刻表リスト描画 */
+/* リスト描画 */
 function renderTimetable() {
   const el = document.getElementById('timetableList');
   el.innerHTML = '';
@@ -247,6 +266,10 @@ function init() {
   document.getElementById('btn-remain').onclick = speakRemain;
   document.getElementById('btn-toggle-minutes').onclick = () => {
     showMinuteFiveNumbers = !showMinuteFiveNumbers;
+    drawClock();
+  };
+  document.getElementById('btn-toggle-minutes1').onclick = () => {
+    showMinuteOneNumbers = !showMinuteOneNumbers;
     drawClock();
   };
 
