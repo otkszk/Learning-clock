@@ -2,14 +2,15 @@ let timetable = [];
 let currentPeriod = {};
 let showMinuteFiveNumbers = true;
 let showMinuteOneNumbers = false;
-let digitalVisible = true; // ✅ デジタル時計表示フラグ
+let digitalVisible = true; // デジタル時計表示フラグ
+let blinkState = true; // 「：」点滅制御用
 
 const canvas = document.getElementById('analogClock');
 const ctx = canvas.getContext('2d');
 const digitalEl = document.getElementById('digitalClock');
 const remainEl = document.getElementById('remainTime');
 
-/* Canvasサイズ */
+/* Canvas設定 */
 function resizeCanvasForDPR() {
   const cssSize = Math.min(window.innerWidth * 0.9, 420);
   const dpr = window.devicePixelRatio || 1;
@@ -32,22 +33,19 @@ function drawClock() {
   const { center, radius } = getCanvasMetrics();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 背景円
+  // 枠
   ctx.beginPath();
   ctx.arc(center, center, radius * 0.95, 0, Math.PI * 2);
   ctx.fillStyle = '#ffffff';
   ctx.fill();
   ctx.lineWidth = Math.max(4, radius * 0.03);
-  ctx.strokeStyle = '#000000';
+  ctx.strokeStyle = '#000';
   ctx.stroke();
 
-  // ✅ ピンクの残り時間部分（現在〜終了）
+  // ピンクの残り時間（現在〜終了）
   if (currentPeriod.start && currentPeriod.end) {
     const now = new Date();
     const totalSecsNow = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-
-    const [sh, sm] = currentPeriod.start.split(':').map(Number);
-    const startSecs = sh * 3600 + sm * 60;
     const [eh, em] = currentPeriod.end.split(':').map(Number);
     const endSecs = eh * 3600 + em * 60;
 
@@ -73,7 +71,7 @@ function drawClock() {
   updateRemainDisplay();
 }
 
-/* 時間・分表示 */
+/* 文字盤 */
 function drawHourNumbers(center, radius) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -100,11 +98,10 @@ function drawMinuteFiveNumbers(center, radius) {
   }
 }
 
-/* ✅ 1分表示：現在の分は赤で表示 */
+/* 1分表示（現在の分を赤く） */
 function drawMinuteOneNumbers(center, radius) {
   const now = new Date();
   const currentMinute = now.getMinutes();
-
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.font = `${Math.round(radius * 0.06)}px "Noto Sans JP"`;
@@ -113,7 +110,6 @@ function drawMinuteOneNumbers(center, radius) {
     const ang = (m * Math.PI) / 30;
     const x = center + Math.sin(ang) * radius * 0.9;
     const y = center - Math.cos(ang) * radius * 0.9;
-
     ctx.fillStyle = (m === currentMinute || (m === 60 && currentMinute === 0)) ? 'red' : '#333';
     ctx.fillText(m, x, y);
   }
@@ -144,23 +140,30 @@ function drawHands(center, radius) {
 
   hand(hourAngle, 0.5, 6, '#143241');
   hand(minAngle, 0.75, 4, 'red');
-  hand(secAngle, 0.88, 2, '#000000');
+  hand(secAngle, 0.88, 2, '#000');
 }
 
-/* デジタル時計・残り時間 */
+/* ✅ デジタル時計：点滅コロン仕様 */
 function updateDigitalClock() {
   const now = new Date();
   const h = now.getHours();
   const m = now.getMinutes();
   const ampm = h < 12 ? '午前' : '午後';
   const h12 = h % 12 === 0 ? 12 : h % 12;
-  digitalEl.textContent = `${ampm}${h12}:${String(m).padStart(2, '0')}`;
+  const colon = blinkState ? ':' : ' ';
+  digitalEl.textContent = `${ampm}${h12}${colon}${String(m).padStart(2, '0')}`;
 
-  // ✅ 表示ON/OFF
-  digitalEl.style.display = digitalVisible ? 'block' : 'none';
-  remainEl.style.display = digitalVisible ? 'block' : 'none';
+  // 非表示でも位置維持
+  if (digitalVisible) {
+    digitalEl.classList.remove('hidden');
+    remainEl.classList.remove('hidden');
+  } else {
+    digitalEl.classList.add('hidden');
+    remainEl.classList.add('hidden');
+  }
 }
 
+/* 残り時間 */
 function updateRemainDisplay() {
   if (!currentPeriod.end) {
     remainEl.textContent = 'ー';
@@ -174,7 +177,7 @@ function updateRemainDisplay() {
   remainEl.textContent = `あと${diff}分`;
 }
 
-/* 時刻表 */
+/* 時刻表関係 */
 async function loadTimetable(path) {
   const res = await fetch(path);
   const raw = await res.json();
@@ -203,14 +206,12 @@ function updateCurrentPeriod() {
   renderTimetable();
 }
 
-/* リスト */
 function renderTimetable() {
   const el = document.getElementById('timetableList');
   el.innerHTML = '';
   const now = new Date();
   const curM = now.getHours() * 60 + now.getMinutes();
   let idx = -1;
-
   timetable.forEach((p, i) => {
     const [sh, sm] = p.start.split(':').map(Number);
     const [eh, em] = p.end.split(':').map(Number);
@@ -218,7 +219,6 @@ function renderTimetable() {
     const et = eh * 60 + em;
     if (curM >= st && curM < et) idx = i;
   });
-
   timetable.forEach((p, i) => {
     const d = document.createElement('div');
     d.className = 'timetable-item';
@@ -226,7 +226,6 @@ function renderTimetable() {
     if (i === idx) d.classList.add('active');
     el.appendChild(d);
   });
-
   if (idx >= 0) {
     requestAnimationFrame(() => {
       const active = el.querySelector('.active');
@@ -243,13 +242,11 @@ function speak(t) {
   speechSynthesis.cancel();
   speechSynthesis.speak(u);
 }
-
 function speakNow() {
   const n = new Date(), h = n.getHours(), m = n.getMinutes();
   const am = h < 12 ? '午前' : '午後'; const h12 = h % 12 || 12;
   speak(`今の時刻は、${am}${h12}時${m}分です`);
 }
-
 function speakRemain() {
   if (currentPeriod.end) {
     const n = new Date(); const [eh, em] = currentPeriod.end.split(':').map(Number);
@@ -267,6 +264,7 @@ function init() {
   loadTimetable('data/timetable1.json');
   drawClock();
   setInterval(() => {
+    blinkState = !blinkState; // ✅ 「：」点滅
     updateCurrentPeriod();
     drawClock();
   }, 1000);
@@ -275,7 +273,6 @@ function init() {
     digitalVisible = !digitalVisible;
     updateDigitalClock();
   };
-
   document.getElementById('btn-now').onclick = speakNow;
   document.getElementById('btn-remain').onclick = speakRemain;
   document.getElementById('btn-toggle-minutes').onclick = () => {
@@ -286,10 +283,8 @@ function init() {
     showMinuteOneNumbers = !showMinuteOneNumbers;
     drawClock();
   };
-
   document.querySelectorAll('.tt-btn').forEach(b => {
     b.onclick = () => loadTimetable(b.dataset.file);
   });
 }
-
 document.addEventListener('DOMContentLoaded', init);
