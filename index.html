@@ -10,10 +10,10 @@
   <div class="app-container">
     <!-- 左：時刻表リスト -->
     <div class="left-panel">
-      <div id="timetableList" class="timetable-list"></div>
+      <div id="timetableList" class="timetable-list" aria-label="時刻表"></div>
     </div>
 
-    <!-- 中央：アナログ時計 -->
+    <!-- 中央：アナログ時計＋デジタル＋残り時間 -->
     <div class="center-panel">
       <canvas id="analogClock" aria-label="アナログ時計"></canvas>
 
@@ -22,7 +22,6 @@
         <div id="remainTime" class="remain-time">ー</div>
       </div>
 
-      <!-- ボタン群 -->
       <div class="buttons">
         <button id="btn-toggle-digital">デジタル</button>
         <button id="btn-now">今のじこく</button>
